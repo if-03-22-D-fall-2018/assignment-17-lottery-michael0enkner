@@ -22,6 +22,7 @@
 
 static FILE* stream;
 static char separator;
+static int drawingOfNumbers[TIP_SIZE];
 
 bool init_lottery(const char *csv_file, char csv_separator)
 {
@@ -65,11 +66,23 @@ bool get_tip(int tip_number, int tip[TIP_SIZE])
 
 bool set_drawing(int drawing_numbers[TIP_SIZE])
 {
-  return false;
+  for (int i = 0; i < TIP_SIZE; i++)
+  {
+    if (drawing_numbers[i] <= 0 || drawing_numbers[i] > 45)
+    {
+      return false;
+    }
+    drawingOfNumbers[i] = drawing_numbers[i];
+  }
+  return true;
 }
 
 int get_tip_result(int tip_number)
 {
+  if (set_drawing(drawingOfNumbers) == false)
+  {
+    return -1;
+  }
   return 0;
 }
 
