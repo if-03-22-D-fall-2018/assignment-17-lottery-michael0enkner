@@ -14,18 +14,52 @@
 #include "general.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define 	UUID_LEN   40
 #define 	MAX_TIP_LEN   17
 #define 	MAX_LINE_LEN   (UUID_LEN + 1 + MAX_TIP_LEN + 1)
 
+static FILE* stream;
+static char separator;
+
 bool init_lottery(const char *csv_file, char csv_separator)
 {
-  return false;
+    stream = fopen(csv_file, "r");
+    separator = csv_separator;
+    if (stream == 0) return false;
+    return true;
 }
 
 bool get_tip(int tip_number, int tip[TIP_SIZE])
 {
+  if (tip_number < 0 || tip_number > 45) return false;
+  int count = 0;
+  char line[100];
+  while ( fgets(line, 100, stream) != NULL)
+  {
+    if (count == tip_number)
+    {
+        if (line[strlen(line)-1] == '\n') line[strlen(line)-1] = '\0';
+        count = 0;
+        char str[2];
+        str[0] = separator;
+        str[1] = '\0';
+        char* ptr = strtok(line, str);
+        while(ptr != NULL && count < TIP_SIZE)
+        {
+            ptr = strtok(NULL, str);
+            tip[count] = atoi(ptr);
+            count++;
+        }
+        rewind(stream);
+        return true;
+    }
+    else
+    {
+        count++;
+    }
+  }
   return false;
 }
 
@@ -41,5 +75,6 @@ int get_tip_result(int tip_number)
 
 int get_right_tips_count(int right_digits_count)
 {
+   fclose(stream);
   return 0;
 }
